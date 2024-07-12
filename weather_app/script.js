@@ -1,46 +1,28 @@
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background: #f0f0f0;
-}
+document.getElementById('getWeatherBtn').addEventListener('click', getWeather);
 
-.container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+function getWeather() {
+    const city = document.getElementById('cityInput').value;
+    const apiKey = '051511d0474b1ec6258c4a6b605b7313'; 
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-h1 {
-    margin-bottom: 20px;
-}
-
-input {
-    padding: 10px;
-    width: 200px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-button {
-    padding: 10px 20px;
-    border: none;
-    background: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0056b3;
-}
-
-#weatherResult {
-    margin-top: 20px;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.cod === 200) {
+                const weatherResult = `
+                    <h2>${data.name}</h2>
+                    <p>Temperature: ${data.main.temp} °C</p>
+                    <p>Pressure: ${data.main.pressure} hPa</p>
+                    <p>Humidity: ${data.main.humidity} %</p>
+                    <p>Description: ${data.weather[0].description}</p>
+                `;
+                document.getElementById('weatherResult').innerHTML = weatherResult;
+            } else {
+                document.getElementById('weatherResult').innerHTML = `<p>${data.message}</p>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching weather data:', error);
+            document.getElementById('weatherResult').innerHTML = `<p>Error fetching weather data</p>`;
+        });
 }
